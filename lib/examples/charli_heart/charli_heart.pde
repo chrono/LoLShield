@@ -1,4 +1,9 @@
 /*
+@author Joe Stauttener 
+- Fix for 8x15 matrix.
+*/
+
+/*
   Example for Charliplexing library
   
   Alex Wenger <a.wenger@gmx.de> http://arduinobuch.wordpress.com/
@@ -7,17 +12,15 @@
   	30/Dez/09 - V0.0 wrote the first version at 26C3/Berlin
 
 */
-#include "CharliplexingBadge.h"
-
 struct point {
   uint8_t xp;        // Point Position in X direction (multplied by 16)
   uint8_t x_speed;   // Speed
   uint8_t flag;  
 } points[9];
 
-void setup()                    // run once, when the sketch starts
+void heartsetup()                    // run once, when the sketch starts
 {
-  LedSign::Init();
+//  LedSign::Init();
   
   for(uint8_t i = 0; i < 9; i++)
   {
@@ -51,7 +54,7 @@ void heart()
     {
       LedSign::Set(x,y,0);    
     }
-  for(uint8_t i = 0; i < 14; i++)
+  for(uint8_t i = 0; i < 15; i++)
   {
     LedSign::Set(heart_p[i*2+1],heart_p[i*2],1);    
   }
@@ -59,12 +62,12 @@ void heart()
 
 uint8_t heart_flag;
 
-void loop()                     // run over and over again
+void heartloop()                     // run over and over again
 {
   for(uint8_t i = 0; i < 9; i++)
   {
     points[i].xp += points[i].x_speed;
-    if (points[i].xp >= 14*16) 
+    if (points[i].xp >= 15*16) 
     {
       points[i].x_speed = random(1, 16);
       points[i].xp = 0;

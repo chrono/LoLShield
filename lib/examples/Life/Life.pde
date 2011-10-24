@@ -1,4 +1,10 @@
 /*
+@author Joe Stauttener 
+- Fix for 8x15 matrix.
+- change color every second (disabled because green has issues)
+*/
+
+/*
  Conway's "Life"
  
  Writen for the LoL Shield, designed by Jimmie Rodgers:
@@ -27,20 +33,19 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
-#include <CharliplexingBadge.h>    //Imports the library, which needs to be
-                              //Initialized in setup.
-
+ 
 #define DELAY 150             //Sets the time each generation is shown
 #define RESEEDRATE 5000       //Sets the rate the world is re-seeded
-#define SIZEX 14              //Sets the X axis size
+#define SIZEX 15              //Sets the X axis size
 #define SIZEY 9               //Sets the Y axis size
 byte world[SIZEX][SIZEY][2];  //Creates a double buffer world
 long density = 50;            //Sets density % during seeding
 int geck = 0;                 //Counter for re-seeding
+int color = 1;
+unsigned long lastMillis = 0;
 
-void setup() {
-  LedSign::Init();            //Initilizes the LoL Shield
+void lifesetup() {
+  lastMillis = millis();
   randomSeed(analogRead(5));
   //Builds the world with an initial seed.
   for (int i = 0; i < SIZEX; i++) {
@@ -56,7 +61,7 @@ void setup() {
   }
 }
 
-void loop() {
+void lifeloop() {
   // Birth and death cycle 
   for (int x = 0; x < SIZEX; x++) { 
     for (int y = 0; y < SIZEY; y++) {
@@ -67,7 +72,7 @@ void loop() {
       if (count == 3 && world[x][y][0] == 0) {
         // A new cell is born
         world[x][y][1] = 1; 
-        LedSign::Set(x,y,1);
+        LedSign::Set(x,y,color);
       } 
       else if ((count < 2 || count > 3) && world[x][y][0] == 1) {
         // Cell dies
@@ -93,6 +98,12 @@ void loop() {
     }
   }
   delay(DELAY);
+/*  if(millis() > lastMillis + 1000) {
+    lastMillis = millis();
+    color = (color + 1) % 4;
+    if (color == 0) color++;    
+  }
+*/
 }
 
 //Re-seeds based off of RESEEDRATE

@@ -1,5 +1,9 @@
-#include <CharliplexingBadge.h>
+/*
+@author Joe Stauttener
+- Modify to have 2 computer players. 
+- Fix for 8x15 matrix.
 
+*/
 //**************************************************************//
 //  Name    : Pong for Arduino / Charlieplexing                 //
 //  Author  : Benjamin Sonntag http://benjamin.sonntag.fr/      //
@@ -36,7 +40,7 @@ int sh1y,sh2y,s1,s2;
 /* ---------------------------------------------------------------------------*/
 /* Arduino setup func
  */
-void setup() {
+void pongsetup() {
   LedSign::Init(DOUBLE_BUFFER);
   
   x = 3;
@@ -56,17 +60,17 @@ void setup() {
 /* ---------------------------------------------------------------------------*/
 /* Arduino main loop 
  */
-void loop() {
+void pongloop() {
   int ct1,ct2,randommove;
 
 
   // The Ball shall bounce on the walls : 
-  if (x==12 || x==1) {
+  if (x==13 || x==1) {
     dx=-dx;
     // Collision detection
     if (x==1) {
       // check the first ship (left side)
-      if (sh1y!=y && sh1y+1!=y) {
+      if (sh1y != y && sh1y + 1 != y) {
         s2++;
         drawscores();
         checkscores();
@@ -80,7 +84,7 @@ void loop() {
       }
 }
   }
-  if (y==8 || y==0) dy=-dy;
+  if (y==7 || y==0) dy=-dy;
  
   
   // Clear the non-active screen
@@ -91,13 +95,13 @@ void loop() {
   y=y+dy;
   
   // Draw the ball :
-  LedSign::Set(x,y,1);
+  LedSign::Set(x,y,3);
 
   // Draw the Ship
   LedSign::Set(0, sh1y, 1);
   LedSign::Set(0, sh1y+1, 1);
-  LedSign::Set(13, sh2y, 1);
-  LedSign::Set(13, sh2y+1, 1);
+  LedSign::Set(14, sh2y, 1);
+  LedSign::Set(14, sh2y+1, 1);
   
   // The ships moves when the ball go in their direction. They follow it magically ;) :   
   /* This code is too smart, in fact he is perfekt :) 
@@ -128,7 +132,7 @@ void loop() {
     if (sh1y<y && (random(0,12)<10 || x<3)) {
       sh1y++;
     }
-    if (random(0,8)==0) {
+    if (random(0,7)==0) {
       if (sh1y>y) {
         sh1y++;
       }
@@ -142,8 +146,33 @@ void loop() {
   // Human Player 
   // 1/4 of the variator is used. If we use it fully, it's too hard to play.
   // To use it fully replace 36 by 146
-  sh2y=analogRead(5)/72; 
-
+//  sh2y=analogRead(5)/72; 
+  if (dx<0) {
+    // the ball goes away from me, let's move randomly
+    randommove=random(0,3);
+    if (randommove==0) {
+      sh2y--;
+    }
+    if (randommove==1) {
+      sh2y++;
+    }
+  } else {
+    if (sh2y>y && (random(0,12)<10 || x>11)) {
+      sh2y--;
+    }
+    if (sh2y<y && (random(0,12)<10 || x>11)) {
+      sh2y++;
+    }
+    if (random(0,7)==0) {
+      if (sh2y>y) {
+        sh2y++;
+      }
+      if (sh1y<y) {
+        sh2y--;
+      }      
+    }
+  }
+  
   // Sanity checks for the ships : 
   if (sh1y>7) sh1y=7;
   if (sh2y>7) sh2y=7;
@@ -181,8 +210,8 @@ void drawscores() {
   for(ps1=0;ps1<8;ps1++) {
     LedSign::Clear();  // Clear the active screen
 
-    LedSign::Set(6,4,1); // dash between the scores
-    LedSign::Set(7,4,1);
+    LedSign::Set(6,4,2); // dash between the scores
+    LedSign::Set(7,4,2);
     
     // Fill it with both scores : 
     // Left score goes up>down
