@@ -1,4 +1,9 @@
 /*
+ * @author: Joe Stauttener
+ * - Fixes for SoOnCon's 2011 Badge (8*15 matrix)
+ */
+
+/*
   Charliplexing.cpp - Using timer2 with 1ms resolution
   
   Alex Wenger <a.wenger@gmx.de> http://arduinobuch.wordpress.com/
@@ -38,7 +43,7 @@ volatile unsigned int LedSign::tcnt2;
 /* -----------------------------------------------------------------  */
 /** Table for the LED multiplexing cycles, containing 12 cycles made out of two bytes
  */
-uint8_t leds[2][24];
+uint8_t leds[3][54];
 
 /// Determines whether the display is in single or double buffer mode
 uint8_t displayMode;
@@ -57,17 +62,30 @@ uint8_t* workBuffer;
 /* -----------------------------------------------------------------  */
 /** Table for LED Position in leds[] ram table 
  */
-const uint16_t ledMap[252] = { 
-    13, 5,13, 6,13, 7,13, 8,13, 9,13,10,13,11,13,12,13, 4, 4,13,13, 3, 3,13,13, 2, 2,13,
-    12, 5,12, 6,12, 7,12, 8,12, 9,12,10,12,11,12,13,12, 4, 4,12,12, 3, 3,12,12, 2, 2,12,
-    11, 5,11, 6,11, 7,11, 8,11, 9,11,10,11,12,11,13,11, 4, 4,11,11, 3, 3,11,11, 2, 2,11,
-    10, 5,10, 6,10, 7,10, 8,10, 9,10,11,10,12,10,13,10, 4, 4,10,10, 3, 3,10,10, 2, 2,10,
-     9, 5, 9, 6, 9, 7, 9, 8, 9,10, 9,11, 9,12, 9,13, 9, 4, 4, 9, 9, 3, 3, 9, 9, 2, 2, 9,
-     8, 5, 8, 6, 8, 7, 8, 9, 8,10, 8,11, 8,12, 8,13, 8, 4, 4, 8, 8, 3, 3, 8, 8, 2, 2, 8,
-     7, 5, 7, 6, 7, 8, 7, 9, 7,10, 7,11, 7,12, 7,13, 7, 4, 4, 7, 7, 3, 3, 7, 7, 2, 2, 7,
-     6, 5, 6, 7, 6, 8, 6, 9, 6,10, 6,11, 6,12, 6,13, 6, 4, 4, 6, 6, 3, 3, 6, 6, 2, 2, 6,
-     5, 6, 5, 7, 5, 8, 5, 9, 5,10, 5,11, 5,12, 5,13, 5, 4, 4, 5, 5, 3, 3, 5, 5, 2, 2, 5,
-    };
+/*const uint16_t ledMap[270] = { 
+    13, 5,13, 6,13, 7,13, 8,13, 9,13,10,13,11,13,12,13, 4, 4,13,13, 3, 3,13,13, 2, 2,13,0,0,
+    12, 5,12, 6,12, 7,12, 8,12, 9,12,10,12,11,12,13,12, 4, 4,12,12, 3, 3,12,12, 2, 2,12,0,0,
+    11, 5,11, 6,11, 7,11, 8,11, 9,11,10,11,12,11,13,11, 4, 4,11,11, 3, 3,11,11, 2, 2,11,0,0,
+    10, 5,10, 6,10, 7,10, 8,10, 9,10,11,10,12,10,13,10, 4, 4,10,10, 3, 3,10,10, 2, 2,10,0,0,
+     9, 5, 9, 6, 9, 7, 9, 8, 9,10, 9,11, 9,12, 9,13, 9, 4, 4, 9, 9, 3, 3, 9, 9, 2, 2, 9,0,0,
+     8, 5, 8, 6, 8, 7, 8, 9, 8,10, 8,11, 8,12, 8,13, 8, 4, 4, 8, 8, 3, 3, 8, 8, 2, 2, 8,0,0,
+     7, 5, 7, 6, 7, 8, 7, 9, 7,10, 7,11, 7,12, 7,13, 7, 4, 4, 7, 7, 3, 3, 7, 7, 2, 2, 7,0,0,
+     6, 5, 6, 7, 6, 8, 6, 9, 6,10, 6,11, 6,12, 6,13, 6, 4, 4, 6, 6, 3, 3, 6, 6, 2, 2, 6,0,0,
+     5, 6, 5, 7, 5, 8, 5, 9, 5,10, 5,11, 5,12, 5,13, 5, 4, 4, 5, 5, 3, 3, 5, 5, 2, 2, 5,0,0,
+     0,
+    };*/
+    
+const uint16_t ledMap[270] = { 
+    17, 2,17, 3,17, 4,17, 5,17, 6,17, 7,17, 8,17, 9,17,10,17,11,17,12,17,13,17,19,17,18,17,16,
+    16, 2,16, 3,16, 4,16, 5,16, 6,16, 7,16, 8,16, 9,16,10,16,11,16,12,16,13,16,19,16,18, 3, 2,
+    18, 2,18, 3,18, 4,18, 5,18, 6,18, 7,18, 8,18, 9,18,10,18,11,18,12,18,13,18,19, 4, 3, 4, 2,
+    19, 2,19, 3,19, 4,19, 5,19, 6,19, 7,19, 8,19, 9,19,10,19,11,19,12,19,13, 5, 4, 5, 3, 5, 2,
+    13, 2,13, 3,13, 4,13, 5,13, 6,13, 7,13, 8,13, 9,13,10,13,11,13,12, 6, 5, 6, 4, 6, 3, 6, 2,//12, 6,12, 5,12, 4,12, 3,
+    12, 2,12, 3,12, 4,12, 5,12, 6,12, 7,12, 8,12, 9,12,10,12,11, 7, 6, 7, 5, 7, 4, 7, 3, 7, 2,
+    11, 2,11, 3,11, 4,11, 5,11, 6,11, 7,11, 8,11, 9,11,10, 8, 7, 8, 6, 8, 5, 8, 4, 8, 3, 8, 2,
+    10, 2,10, 3,10, 4,10, 5,10, 6,10, 7,10, 8,10, 9, 9, 8, 9, 7, 9, 6, 9, 5, 9, 4, 9, 3, 9, 2
+};
+     
 
 
 /* -----------------------------------------------------------------  */
@@ -197,8 +215,8 @@ void LedSign::Flip(bool blocking)
  * @param set if 1 : make all led ON, if not set or 0 : make all led OFF
  */
 void LedSign::Clear(int set) {
-    for(int x=0;x<14;x++)  
-        for(int y=0;y<9;y++) 
+    for(int x=0;x<15;x++)  
+        for(int y=0;y<8;y++) 
             Set(x,y,set);
 }
 
@@ -209,7 +227,7 @@ void LedSign::Clear(int set) {
  * @param set if 1 : make all led ON, if not set or 0 : make all led OFF
  */
 void LedSign::Horizontal(int y, int set) {
-    for(int x=0;x<14;x++)  
+    for(int x=0;x<15;x++)  
         Set(x,y,set);
 }
 
@@ -220,7 +238,7 @@ void LedSign::Horizontal(int y, int set) {
  * @param set if 1 : make all led ON, if not set or 0 : make all led OFF
  */
 void LedSign::Vertical(int x, int set) {
-    for(int y=0;y<9;y++)  
+    for(int y=0;y<8;y++)  
         Set(x,y,set);
 }
 
@@ -232,17 +250,28 @@ void LedSign::Vertical(int x, int set) {
  */
 void LedSign::Set(uint8_t x, uint8_t y, uint8_t c)
 {
-    uint8_t pin_low  = ledMap[x*2+y*28+1];
-    uint8_t pin_high = ledMap[x*2+y*28+0];
+    uint8_t red_low  = ledMap[x*2+y*30+1];
+    uint8_t red_high = ledMap[x*2+y*30+0];
+    uint8_t green_low = red_high;
+    uint8_t green_high = red_low;
     // pin_low is directly the address in the led array (minus 2 because the 
     // first two bytes are used for RS232 communication), but
     // as it is a two byte array we need to check pin_high also.
     // If pin_high is bigger than 8 address has to be increased by one
-    if (c == 1) {
-        workBuffer[(pin_low-2)*2 + (pin_high / 8)] |=  _BV(pin_high & 0x07);   // ON
-    } 
+    
+    if (c == 3) { // ORANGE
+        workBuffer[(red_low-2)*3 + (red_high / 8)] |=  _BV(red_high & 0x07);   // RED ON
+        workBuffer[(green_low-2)*3 + (green_high / 8)] |=  _BV(green_high & 0x07);   // GREEN ON
+    } else if(c == 2) { // GREEN
+        workBuffer[(red_low-2)*3 + (red_high / 8)] &= ~_BV(red_high & 0x07);   // RED OFF
+        workBuffer[(green_low-2)*3 + (green_high / 8)] |=  _BV(green_high & 0x07);   // GREEN ON    
+    } else if(c == 1) { // RED
+        workBuffer[(red_low-2)*3 + (red_high / 8)] |=  _BV(red_high & 0x07);   // RED ON
+        workBuffer[(green_low-2)*3 + (green_high / 8)] &= ~_BV(green_high & 0x07);   // GREEN OFF
+    }
     else {
-        workBuffer[(pin_low-2)*2 + (pin_high / 8)] &= ~_BV(pin_high & 0x07);   // OFF
+        workBuffer[(red_low-2)*3 + (red_high / 8)] &= ~_BV(red_high & 0x07);   // RED OFF
+        workBuffer[(green_low-2)*3 + (green_high / 8)] &= ~_BV(green_high & 0x07);   // GREEN OFF
     }
 }
 
@@ -263,17 +292,35 @@ ISR(TIMER2_OVF_vect) {
     static uint8_t i = 0;
 
     if (i < 6) {
-        DDRD  = _BV(i+2) | displayBuffer[i*2];
-        PORTD =            displayBuffer[i*2];
+        DDRD  = _BV(i+2) | displayBuffer[i*3];
+        PORTD =            displayBuffer[i*3];
 
-        DDRB  =            displayBuffer[i*2+1];
-        PORTB =            displayBuffer[i*2+1];
+        DDRB  =            displayBuffer[i*3+1];
+        PORTB =            displayBuffer[i*3+1];
+
+        DDRC  =            displayBuffer[i*3+2];
+        PORTC =            displayBuffer[i*3+2];
+    } else if (i < 12) {
+        DDRD  =            displayBuffer[i*3];
+        PORTD =            displayBuffer[i*3];
+
+        DDRB  = _BV(i-6) | displayBuffer[i*3+1];
+        PORTB =            displayBuffer[i*3+1];
+
+        DDRC  =            displayBuffer[i*3+2];
+        PORTC =            displayBuffer[i*3+2];
+    } else if (i < 14) {
+        DDRB  =            displayBuffer[(i+2)*3+1];
+        PORTB =            displayBuffer[(i+2)*3+1];
+
+        DDRC  = _BV(i-12) | displayBuffer[(i+2)*3+2];
+        PORTC =            displayBuffer[(i+2)*3+2];
     } else {
-        DDRD =             displayBuffer[i*2];
-        PORTD =            displayBuffer[i*2];
+        DDRD =             displayBuffer[i*3];
+        PORTD =            displayBuffer[i*3];
 
-        DDRB  = _BV(i-6) | displayBuffer[i*2+1];
-        PORTB =            displayBuffer[i*2+1];      
+        DDRC  = _BV(i-14) | displayBuffer[i*3+2];
+        PORTC =            displayBuffer[i*3+2];
     } 
     /*
        PORTB = 0xff;
@@ -283,7 +330,7 @@ ISR(TIMER2_OVF_vect) {
      */
 
     i++;
-    if (i > 12) {
+    if (i > 18) {
         i = 0;
 
         // If the page should be flipped, do it here.
