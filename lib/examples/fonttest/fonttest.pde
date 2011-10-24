@@ -21,7 +21,7 @@
   Boston, MA 02111-1307, USA.
 */
 
-#include "Charliplexing.h"
+#include "CharliplexingBadge.h"
 #include "Font.h"
 
 #include "WProgram.h"

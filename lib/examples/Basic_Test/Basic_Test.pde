@@ -29,7 +29,7 @@
 */
 
 #include <avr/pgmspace.h>  //AVR library for writing to ROM
-#include <Charliplexing.h> //Imports the library, which needs to be
+#include <CharliplexingBadge.h> //Imports the library, which needs to be
                            //Initialized in setup.
 
 int blinkdelay = 100;      //Sets the time each frame is shown

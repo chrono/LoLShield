@@ -36,7 +36,7 @@
 #include "WProgram.h"
 #include <inttypes.h>
 #include <avr/interrupt.h>
-#include "Charliplexing.h"
+#include "CharliplexingBadge.h"
 
 volatile unsigned int LedSign::tcnt2;
 

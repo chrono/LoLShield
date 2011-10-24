@@ -23,7 +23,7 @@
 */
 
 #include "Font.h"
-#include "Charliplexing.h"
+#include "CharliplexingBadge.h"
 #include <inttypes.h>
 
 

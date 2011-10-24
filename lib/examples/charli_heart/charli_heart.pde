@@ -7,7 +7,7 @@
   	30/Dez/09 - V0.0 wrote the first version at 26C3/Berlin
 
 */
-#include "Charliplexing.h"
+#include "CharliplexingBadge.h"
 
 struct point {
   uint8_t xp;        // Point Position in X direction (multplied by 16)

@@ -28,7 +28,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <Charliplexing.h>    //Imports the library, which needs to be
+#include <CharliplexingBadge.h>    //Imports the library, which needs to be
                               //Initialized in setup.
 
 #define DELAY 150             //Sets the time each generation is shown

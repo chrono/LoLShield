@@ -1,4 +1,4 @@
-#include <Charliplexing.h>
+#include <CharliplexingBadge.h>
 
 //**************************************************************//
 //  Name    : Pong for Arduino / Charlieplexing                 //
